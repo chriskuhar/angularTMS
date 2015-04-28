@@ -1,0 +1,116 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Editor</title>
+
+  <style type="text/css" media="screen">
+    .contentTree {
+        min-height: 600px;
+        background: green;
+    }
+
+.ace_editor {
+  height: 400px;
+}
+
+  </style>
+</head>
+<body ng-app="ngBoilerplate">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Template Manager</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Templates <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/editor">Editor</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Languages <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Locales</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">User <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Profile</a></li>
+                <li class="divider"></li>
+                <li><a href="/logout">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+            </span></a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+<div class="container" ng-controller="AppCtrl">
+
+        <div class="col-md-3">
+            <div class="well well-lg">
+              <legend>Files</legend>
+                <js-tree tree-data="json" tree-src="/treeview" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
+            </div> <!-- /LHS well -->
+        </div> <!-- /col-md-3 -->
+        <div class="col-md-9">
+            <div class="well well-lg">
+                <div ng-controller="EditCtrl">
+                    <div ui-view></div>
+                </div>
+
+            </div> <!-- /RHS well -->
+        </div> <!-- /col-md-9 -->
+    </div>
+</div> <!-- /container -->
+
+    <!-- font awesome from BootstrapCDN -->
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <!-- compiled CSS -->
+    <link rel="stylesheet" type="text/css" href="/web/vendor/bootstrap/dist/css/bootstrap.css" />
+
+    <!-- Custom styles for this template -->
+    <link href="http://getbootstrap.com/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+
+    <!-- compiled JavaScript -->
+    <script type="text/javascript" src="/web/vendor/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="/web/vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="/web/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min.js"></script>
+    <script type="text/javascript" src="/web/vendor/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/web/vendor/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/web/src/app/about/about.js"></script>
+    <script type="text/javascript" src="/web/src/app/home/home.js"></script>
+    <script type="text/javascript" src="/web/src/common/plusOne/plusOne.js"></script>
+    <script type="text/javascript" src="/web/build/templates-common.js"></script>
+    <script type="text/javascript" src="/web/build/templates-app.js"></script>
+    <script type="text/javascript" src="/web/src/app/app.js"></script>
+
+
+<!-- load jstree -->
+<script src="/vendor/jstree/dist/jstree.js"></script>
+<script src="/vendor/jstree-directive/jsTree.directive.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/vendor/jstree/dist/themes/default/style.min.css" />
+
+<!-- load ace -->
+<link rel="stylesheet" type="text/css" href="/vendor/ace/lib/ace/css/editor.css" />
+<script src="/vendor/ace/build/src/ace.js"></script>
+<script src="/vendor/ui-ace/ui-ace.js"></script>
+</body>
+</html>

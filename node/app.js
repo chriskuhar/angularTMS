@@ -11,6 +11,12 @@ var LocalStrategy = require('passport-local').Strategy;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var templates = require('./routes/templates');
+var tpl = require('./routes/tpl');
+var treeview = require('./routes/treeview');
+var content = require('./routes/content');
+var editor = require('./routes/editor');
+var editorform = require('./routes/editorform');
 
 var app = express();
 
@@ -19,7 +25,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +41,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', routes);
+app.use('/templates', templates);
+app.use('/tpl/*', tpl);
+app.use('/treeview', treeview);
+app.use('/content', content);
+app.use('/editor', editor);
+app.use('/editorform', editorform);
 
 // passport config
 var Account = require('./models/account');
