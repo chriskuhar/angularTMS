@@ -13,6 +13,10 @@
   height: 400px;
 }
 
+#jstreeelt {
+    width: 190px;
+
+}
   </style>
 </head>
 <body ng-app="ngBoilerplate">
@@ -64,7 +68,7 @@
         <div class="col-md-3">
             <div class="well well-lg">
               <legend>Files</legend>
-                <js-tree tree-data="json" tree-src="/treeview" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB"></js-tree>
+                <div id="jstreeelt" js-tree tree-data="json" tree-src="/treeview" tree-events="ready:readyCB;changed:changedCB;open_node:openNodeCB;rename_node:renameNodeCB;create_node:createNodeCB" tree-plugins="contextmenu,wholerow" tree-contextmenu="treeContextObj" tree-contextmenuaction="treeContextCB"></div>
             </div> <!-- /LHS well -->
         </div> <!-- /col-md-3 -->
         <div class="col-md-9">
@@ -72,7 +76,6 @@
                 <div ng-controller="EditCtrl">
                     <div ui-view></div>
                 </div>
-
             </div> <!-- /RHS well -->
         </div> <!-- /col-md-9 -->
     </div>
