@@ -15,7 +15,8 @@ angular.module( 'ngBoilerplate', [
     .state('editor', {
         url: "/editor/{id}",
         templateUrl: "/tpl/editor",
-        controller: 'EditCtrl'
+        //controller: 'EditCtrl'
+        controller: 'AppCtrl'
     })
 })
 
@@ -36,7 +37,23 @@ angular.module( 'ngBoilerplate', [
 
 })
 
-.controller( 'AppCtrl', function AppCtrl ( $scope, $location, $http, $state, jsTreeNav ) {
+// global access to EditCtrl scope
+//
+.service('scopeEditCtrl', function() {
+
+    var scope = null;
+
+    this.setScope = function(_scope) {
+        scope = _scope;
+    };
+
+    this.getScope = function() {
+        return scope;
+    };
+
+})
+
+.controller( 'AppCtrl', function AppCtrl ( $scope, $location, $http, $state, jsTreeNav , $stateParams, scopeEditCtrl) {
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
       // Set page title, but not now need to get proper scope / nesting
       //
@@ -44,20 +61,24 @@ angular.module( 'ngBoilerplate', [
     //  $scope.pageTitle = toState.data.pageTitle + ' | ngBoilerplate' ;
     //}
   });
+    scopeEditCtrl.setScope($scope);
 
     $scope.readyCB = function(e, data) {
         console.log("DEBUG readyCB");
-    }
+    };
 
     $scope.clickCB = function(e, data) {
         console.log("DEBUG clickCB");
-    }
+    };
 
     $scope.changedCB = function(e, data) {
 
         // do nothing of no data
+        // or not leaf node
         //
-        if((typeof data.node == 'undefined') || (typeof data.node.id == 'undefined')) {
+        if((typeof data.node == 'undefined') || 
+                (typeof data.node.id == 'undefined') || 
+                (data.node.children.length > 0)) {
             return;
         }
 
@@ -75,16 +96,150 @@ angular.module( 'ngBoilerplate', [
         }
         
         $state.go('editor', {'id':data.node.id});
-    }
+    };
 
+    $scope.treeContextCB = function(e) {
+        console.log("treeContextCB");
+        // NOTE: these were stolen from jstree.js around line 5211
+        //
+        // See for list of all possible operations: $.jstree.defaults.contextmenu
+        //
+	var folder =  {
+		"create" : {
+			"separator_before"  : false,
+			"separator_after"   : true,
+			"_disabled"	    : false, //(this.check("create_node", data.reference, {}, "last")),
+			"label"		    : "Create",
+			"action"	    : function (data) {
+				var inst = $.jstree.reference(data.reference),
+					   obj = inst.get_node(data.reference);
+
+				inst.create_node(obj, {}, "last", function (new_node) {
+					setTimeout(function () { inst.edit(new_node); },0);
+				});
+			}
+		}
+
+        };
+        var file = {
+		"rename" : {
+			"separator_before"  : false,
+			"separator_after"   : false,
+			"_disabled"	    : false, //(this.check("rename_node", data.reference, this.get_parent(data.reference), "")),
+			"label"		    : "Rename",
+			/*
+			"shortcut"	    : 113,
+			"shortcut_label"    : 'F2',
+			"icon"		    : "glyphicon glyphicon-leaf",
+			*/
+			"action"    : function (data) {
+				var inst = $.jstree.reference(data.reference),
+					obj = inst.get_node(data.reference);
+
+				inst.edit(obj);
+			}
+		},
+		"remove" : {
+			"separator_before"  : false,
+			"icon"		    : false,
+			"separator_after"   : false,
+			"_disabled"	    : false, //(this.check("delete_node", data.reference, this.get_parent(data.reference), "")),
+			"label"		    : "Delete",
+			"action"	    : function (data) {
+				var inst = $.jstree.reference(data.reference),
+					obj = inst.get_node(data.reference);
+				if(inst.is_selected(obj)) {
+					inst.delete_node(inst.get_selected());
+				}
+				else {
+					inst.delete_node(obj);
+				}
+			}
+		},
+        };
+
+        // determin menu contents
+        // top level Files, no menu
+        //
+        // TODO: localize "Files" tricky here
+        //
+        if(e.children.length == 0) {
+            return file;
+        } if (e.text == "Files") {
+            return {};
+        }
+
+        return folder;
+    };
+
+    $scope.renameNodeCB = function(e, data) {
+        console.log("rename node SETTING BROADCAST rename_node_event");
+        //$scope.$broadcast('rename_node_event', {'id': data.node.id, 'text': data.text});
+        $scope = scopeEditCtrl.getScope();
+        //formScope.route = data.text;
+        $scope.route = data.text;
+        $scope.id = data.node.id;
+
+        var data = { 
+            id: $scope.id,
+            route: $scope.route
+        };
+
+        if((typeof $scope.id != 'undefined') && ($scope.id != null) && ($scope.id != 0)) {
+            // Update Template
+            //
+            //
+            data.id = $scope.id;
+
+            var dataOut = JSON.stringify(data);
+
+            $http.put("/templates", dataOut).success(function(data) {
+                if(data.success == true) {
+                    console.log("Success, template saved");
+                } else {
+                    console.log("Error, template not saved");
+                }
+            }).error(function(data) {
+                console.log("Error, template not saved");
+            });
+        } 
+
+        $state.go('editor', {'id': $scope.id});
+    };
+
+    $scope.createNodeCB = function(e, foo, bar, baz) {
+        console.log("create node");
+        $state.go('editor', {'id':0});
+    };
+
+    /* We are one
 })
 
-.controller( 'EditCtrl', function AppCtrl ( $scope, $location, $http, $stateParams, jsTreeNav) {
+.controller( 'EditCtrl', function EditCtrl ( $scope, $location, $http, $stateParams, jsTreeNav, scopeEditCtrl) {
+*/
     console.log("DEBUG EditCtrl id:" + $stateParams.id);
     $scope.id = $stateParams.id;
+    //scopeEditCtrl.setScope($scope);
+
+    /*
+    $scope.$on('rename_node_event', function(event, data) {
+        console.log("received event" + data.id);
+        //var formScope = scopeEditCtrl.getScope();
+        //formScope.route = data.text;
+        $scope.route = data.text;
+    });
+    */
 
     $scope.aceLoaded = function(_editor) {
         $scope.aceEditor = _editor;
+
+        // if new file, just return
+        // nothing to fill out
+        //
+        if($stateParams.id == 0) {
+            return;
+        } 
+
         $http.get("/templates?id=" + $stateParams.id).success(function(data) {
             $scope.route = data.route;
             $scope.description = data.description;
@@ -111,7 +266,7 @@ angular.module( 'ngBoilerplate', [
     };
 
     $scope.aceChanged = function(e) {
-
+        console.log("aceChanged");
     }
 
     $scope.CopyTemplate = function() {
