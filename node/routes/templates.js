@@ -146,6 +146,12 @@ router.post('/', function(req, res, next) {
             newVals.group = req.body.group;
     }
 
+    if((typeof req.body.contenttype != 'undefined') && 
+        (req.body.contenttype != null) && 
+        (req.body.contenttype.length > 0)) {
+            newVals.contenttype = req.body.contenttype;
+    }
+
     if((typeof req.body.content != 'undefined') && 
         (req.body.content != null) && 
         (req.body.content.length > 0)) {
@@ -217,6 +223,13 @@ router.put('/', function(req, res, next) {
         (req.body.group != null) && 
         (req.body.group.length > 0)) {
             newVals.group = req.body.group;
+            argCount++;
+    }
+
+    if((typeof req.body.contenttype != 'undefined') && 
+        (req.body.contenttype != null) && 
+        (req.body.contenttype.length > 0)) {
+            newVals.contenttype = req.body.contenttype;
             argCount++;
     }
 

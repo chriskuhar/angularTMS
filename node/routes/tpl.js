@@ -40,9 +40,10 @@ router.get('/', function(req, res, next) {
 
                 // for HTML data
                 //
-                res.contentType('text/html');
+                if((typeof template.contenttype != 'undefined') && (template.contenttype != null)) {
+                    res.contentType(template.contenttype);
+                }
                 res.send(content);
-
             }
         });
     } else {

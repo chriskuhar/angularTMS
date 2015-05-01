@@ -23,6 +23,25 @@ angular.module( 'ngBoilerplate', [
 .run( function run () {
 })
 
+.value('contentTypeOptions', [
+        {
+            'text': "HTML",
+            'contenttype': "text/html"
+        },
+        {
+            'text': "CSS",
+            'contenttype': "text/css"
+        },
+        {
+            'text': "JavaScript",
+            'contenttype': "application/javascript"
+        },
+        {
+            'text': "JSON",
+            'contenttype': "application/json"
+        }
+    ])
+
 .service('jsTreeNav', function() {
 
     var jsTree = null;
@@ -53,7 +72,15 @@ angular.module( 'ngBoilerplate', [
 
 })
 
-.controller( 'AppCtrl', function AppCtrl ( $scope, $location, $http, $state, jsTreeNav , $stateParams, scopeEditCtrl) {
+.controller( 'AppCtrl', function AppCtrl ( $scope, 
+                                            $location, 
+                                            $http, 
+                                            $state, 
+                                            jsTreeNav , 
+                                            $stateParams, 
+                                            scopeEditCtrl,
+                                            contentTypeOptions) {
+
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
       // Set page title, but not now need to get proper scope / nesting
       //
@@ -276,6 +303,17 @@ angular.module( 'ngBoilerplate', [
             //var _session = _editor.getSession();
             //_session.setValue(content);
 
+            // set selected content tyhpe
+            //
+            $scope.contentTypeOptions = contentTypeOptions;
+
+            var keyFound = 0;
+            $.each($scope.contentTypeOptions, function(key, value) {
+                if(data.contenttype == value.contenttype) {
+                    $scope.contentType = $scope.contentTypeOptions[key];
+                }
+            });
+
         }).error(function(data){
             console.log("Error fetching template");
         });
@@ -312,11 +350,13 @@ angular.module( 'ngBoilerplate', [
         var route = $scope.route;
         var description = $scope.description;
         var group = $scope.group;
+        var contenttype = $scope.contentType.contenttype;
 
         var data = { 
             route: route,
             description: description,
             group: group,
+            contenttype: contenttype,
             content: content
         };
 
