@@ -172,16 +172,19 @@ angular.module( 'ngBoilerplate', [
         return folder;
     };
 
-    $scope.renameNodeCB = function(e, data) {
-        console.log("rename node SETTING BROADCAST rename_node_event");
-        //$scope.$broadcast('rename_node_event', {'id': data.node.id, 'text': data.text});
+    $scope.renameNodeCB = function(e, treeData) {
         $scope = scopeEditCtrl.getScope();
-        //formScope.route = data.text;
-        $scope.route = data.text;
-        $scope.id = data.node.id;
+        $scope.route = treeData.text;
+        $scope.id = treeData.node.id;
+
+        // create new node if it has '_'
+        // if it has one it was jstree generated id
+        //
+        if(treeData.node.id.indexOf('_') > 0) {
+            $scope.id = 0;
+        }
 
         var data = { 
-            id: $scope.id,
             route: $scope.route
         };
 
@@ -202,7 +205,21 @@ angular.module( 'ngBoilerplate', [
             }).error(function(data) {
                 console.log("Error, template not saved");
             });
-        } 
+        } else {
+            var dataOut = JSON.stringify(data);
+
+            $http.post("/templates", dataOut).success(function(data) {
+                if(data.success == true) {
+                    console.log("Success, template saved");
+                    treeData.node.id = data.id;
+                } else {
+                    console.log("Error, template not saved");
+                }
+            }).error(function(data) {
+                console.log("Error, template not saved");
+            });
+
+        }
 
         $state.go('editor', {'id': $scope.id});
     };
@@ -212,23 +229,8 @@ angular.module( 'ngBoilerplate', [
         $state.go('editor', {'id':0});
     };
 
-    /* We are one
-})
-
-.controller( 'EditCtrl', function EditCtrl ( $scope, $location, $http, $stateParams, jsTreeNav, scopeEditCtrl) {
-*/
     console.log("DEBUG EditCtrl id:" + $stateParams.id);
     $scope.id = $stateParams.id;
-    //scopeEditCtrl.setScope($scope);
-
-    /*
-    $scope.$on('rename_node_event', function(event, data) {
-        console.log("received event" + data.id);
-        //var formScope = scopeEditCtrl.getScope();
-        //formScope.route = data.text;
-        $scope.route = data.text;
-    });
-    */
 
     $scope.aceLoaded = function(_editor) {
         $scope.aceEditor = _editor;

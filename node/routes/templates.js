@@ -120,52 +120,64 @@ router.post('/', function(req, res, next) {
     var message = ""
     var ret = { success: success,
                 message: message };
+    var newVals =  {};
 
     // validate input
     //
-    if(typeof req.body.route == "undefined") {
-        ret.message = "route required";
-    } else if(typeof req.body.description == "undefined") {
-        ret.message = "description required";
-    } else if(typeof req.body.group == "undefined") {
-        ret.message = "group required";
-    } else if(typeof req.body.content == "undefined") {
-        ret.message = "content required";
-    }
-
-    // any input error return error
-    
-    if(ret.message.length > 0) {
+    if((typeof req.body.route == "undefined") ||
+        (req.body.route == null) ||
+        (req.body.route.length == null)){
+        ret.message = "route is a required field";
         res.json(ret);
         return;
+    } else {
+        newVals.route = req.body.route;
     }
 
-    if(typeof req.body.route != "undefined") {
-        //
-        // build save object
-        //
-        var template = new Template({
-            route: req.body.route,
-            description: req.body.route,
-            group: req.body.group,
-            content: req.body.content
-        });
-        
-        // save to DB
-        //
-        template.save(function(err, template) {
-        
-            // check for save error
+    if((typeof req.body.description != 'undefined') && 
+        (req.body.description != null) && 
+        (req.body.description.length > 0)) {
+            newVals.description = req.body.description;
+    }
+
+    if((typeof req.body.group != 'undefined') && 
+        (req.body.group != null) && 
+        (req.body.group.length > 0)) {
+            newVals.group = req.body.group;
+    }
+
+    if((typeof req.body.content != 'undefined') && 
+        (req.body.content != null) && 
+        (req.body.content.length > 0)) {
+            newVals.content = req.body.content;
+    }
+    
+    Template.findOne({route: req.body.route}, function(err, template) {
+
+        if((typeof template == 'undefined') || (template == null)) {
+            var template = new Template(newVals);
+            
+            // save to DB
             //
-            if(err) {
-                ret.message = err;
-            } else {
-                ret.success = true;
-            }
-        
+            template.save(function(err, template) {
+            
+                // check for save error
+                //
+                if(err) {
+                    ret.message = err;
+                } else {
+                    ret.success = true;
+                }
+                ret.id = template._id;
+            
+                res.json(ret);
+            });
+        } else {
+            ret.message = "route already exists";
             res.json(ret);
-        });
-    } 
+            return;
+        }
+    });
 });
 
 router.put('/', function(req, res, next) {
@@ -181,7 +193,10 @@ router.put('/', function(req, res, next) {
         (req.body.id != null) && 
         (req.body.id.length > 0)) {
             newVals._id = req.body.id;
-            argCount++;
+    } else {
+        ret.message = "id is a required field";
+        res.json(ret);
+        return;
     }
         
     if((typeof req.body.route != 'undefined') && 
