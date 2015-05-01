@@ -224,11 +224,25 @@ angular.module( 'ngBoilerplate', [
         $state.go('editor', {'id': $scope.id});
     };
 
-    $scope.createNodeCB = function(e, foo, bar, baz) {
+    $scope.createNodeCB = function(e, data) {
         console.log("create node");
         $state.go('editor', {'id':0});
     };
 
+    $scope.deleteNodeCB = function(e, data) {
+        $scope.id = data.node.id;
+        if((typeof $scope.id != undefined) && ($scope.id != null) && ($scope.id != 0)) {
+            $http.delete("/templates?id=" + $scope.id).success(function(data) {
+                 if(data.success == true) {
+                     console.log("Success, template deleted");
+                 } else {
+                     console.log("Error, template not deleted");
+                 }
+            }).error(function(data) {
+                 console.log("Error, template not deleted");
+            });
+        }
+    }
     console.log("DEBUG EditCtrl id:" + $stateParams.id);
     $scope.id = $stateParams.id;
 
