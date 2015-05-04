@@ -158,6 +158,12 @@ router.post('/', function(req, res, next) {
             newVals.content = req.body.content;
     }
     
+    if((typeof req.body.size != 'undefined') && 
+        (req.body.size != null) && 
+        (req.body.size.length > 0)) {
+            newVals.size = req.body.size;
+    }
+    
     Template.findOne({route: req.body.route}, function(err, template) {
 
         if((typeof template == 'undefined') || (template == null)) {
@@ -237,6 +243,13 @@ router.put('/', function(req, res, next) {
         (req.body.content != null) && 
         (req.body.content.length > 0)) {
             newVals.content = req.body.content;
+            argCount++;
+    }
+    
+    if((typeof req.body.size != 'undefined') && 
+        (req.body.size != null) && 
+        (req.body.size.length > 0)) {
+            newVals.size = req.body.size;
             argCount++;
     }
     

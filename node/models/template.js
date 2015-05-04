@@ -6,7 +6,8 @@ var Template = new Schema({
     group: String,
     route: String,
     contenttype: String,
-    content: String
+    content: String,
+    size: String
 });
 
 module.exports = mongoose.model('templates', Template);

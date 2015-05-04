@@ -15,7 +15,6 @@ angular.module( 'ngBoilerplate', [
     .state('editor', {
         url: "/editor/{id}",
         templateUrl: "/tpl/editor",
-        //controller: 'EditCtrl'
         controller: 'AppCtrl'
     })
 })
@@ -39,6 +38,10 @@ angular.module( 'ngBoilerplate', [
         {
             'text': "JSON",
             'contenttype': "application/json"
+        },
+        {
+            'text': "Image",
+            'contenttype': "image/auto-select"
         }
     ])
 
@@ -72,6 +75,16 @@ angular.module( 'ngBoilerplate', [
 
 })
 
+.directive('fileOnChange', function() {
+      return {
+              restrict: 'A',
+    link: function (scope, element, attrs) {
+              var onChangeFunc = scope.$eval(attrs.fileOnChange);
+                    element.bind('change', onChangeFunc);
+                        }
+  };
+})
+
 .controller( 'AppCtrl', function AppCtrl ( $scope, 
                                             $location, 
                                             $http, 
@@ -88,6 +101,7 @@ angular.module( 'ngBoilerplate', [
     //  $scope.pageTitle = toState.data.pageTitle + ' | ngBoilerplate' ;
     //}
   });
+    $scope.showAceEditor = true;
     scopeEditCtrl.setScope($scope);
 
     $scope.readyCB = function(e, data) {
@@ -303,13 +317,24 @@ angular.module( 'ngBoilerplate', [
             //var _session = _editor.getSession();
             //_session.setValue(content);
 
-            // set selected content tyhpe
+            // set selected content type
             //
+            // Get content type, construct the correct form
+            // see if it is an image
+            var cType = "text/html";
+            $scope.showAceEditor = true;
+
+            if (data.contenttype.toLowerCase().indexOf('image') == 0) {
+                cType = "image/auto-select";
+                $scope.showAceEditor = false;
+                $scope.previewSrc = "/tpl/" + data.route;
+            } 
+            
             $scope.contentTypeOptions = contentTypeOptions;
 
             var keyFound = 0;
             $.each($scope.contentTypeOptions, function(key, value) {
-                if(data.contenttype == value.contenttype) {
+                if(cType == value.contenttype) {
                     $scope.contentType = $scope.contentTypeOptions[key];
                 }
             });
@@ -346,11 +371,24 @@ angular.module( 'ngBoilerplate', [
     // 
     $scope.SaveTemplate = function() {
         var id = $scope.id;
-        var content = btoa($scope.aceEditor.getSession().getValue());
         var route = $scope.route;
         var description = $scope.description;
         var group = $scope.group;
-        var contenttype = $scope.contentType.contenttype;
+
+        var contenttype = ""
+        var content = "";
+        // plain text content
+        //
+        if($scope.showAceEditor === true) {
+            contenttype = $scope.contentType.contenttype;
+            content = btoa($scope.aceEditor.getSession().getValue());
+        } else {
+            // image content
+            //
+            contenttype = $scope.imageContentType
+            content = $scope.imageData
+            $scope.route = $scope.imageName;
+        }
 
         var data = { 
             route: route,
@@ -359,6 +397,10 @@ angular.module( 'ngBoilerplate', [
             contenttype: contenttype,
             content: content
         };
+
+        if($scope.showAceEditor === false) {
+            data.size = $scope.imageSize;
+        }
 
         if((typeof $scope.id != 'undefined') && ($scope.id != null) && ($scope.id != 0)) {
             // Update Template
@@ -404,6 +446,39 @@ angular.module( 'ngBoilerplate', [
             console.log("submitTemplate Edit Template");
         }
     };
+
+    $scope.changeContentType = function() {
+        console.log("changed content type to " + $scope.contentType.contenttype);
+        $scope.showAceEditor = ($scope.contentType.contenttype == "image/auto-select")? false: true;
+    };
+
+    angular.extend($scope, {
+        model: { file: null },
+        
+        uploadFile: function(model) {
+            console.log("upload files");
+            var imageFile = $("#uploadFile");
+            var blob = uploadFile.files[0];
+
+            var imageBlob = null;
+            var imageData = null;
+
+            var reader = new FileReader();
+
+            reader.onload = function() {
+                imageBlob = reader.result;
+                $scope.imageData = btoa(imageBlob);
+                $scope.imageName = blob.name;
+                $scope.route = blob.name;
+                $scope.imageContentType = blob.type;
+                $scope.imageSize = blob.size;
+                $scope.previewSrc = "/tpl/" + blob.name;
+            }
+
+            reader.readAsBinaryString(blob);
+
+        }
+    });
 
 })
 ;
