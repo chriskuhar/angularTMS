@@ -298,6 +298,11 @@ angular.module( 'ngBoilerplate', [
         } 
 
         $http.get("/templates?id=" + $stateParams.id).success(function(data) {
+            // did not find a template, that is okay
+            //
+            if(typeof data == 'string') {
+                return;
+            }
             $scope.route = data.route;
             $scope.description = data.description;
             $scope.group = data.group;
@@ -324,12 +329,24 @@ angular.module( 'ngBoilerplate', [
             var cType = "text/html";
             $scope.showAceEditor = true;
 
-            if (data.contenttype.toLowerCase().indexOf('image') == 0) {
+            if(data.contenttype.toLowerCase().indexOf('text/css') == 0) {
+                cType = data.contenttype;
+                _editor.session.setMode("ace/mode/css");
+            } else if(data.contenttype.toLowerCase().indexOf('application/javascript') == 0) {
+                cType = data.contenttype;
+                _editor.session.setMode("ace/mode/javascript");
+            } else if(data.contenttype.toLowerCase().indexOf('application/json') == 0) {
+                cType = data.contenttype;
+                _editor.session.setMode("ace/mode/json");
+            } else if(data.contenttype.toLowerCase().indexOf('image') == 0) {
                 cType = "image/auto-select";
                 $scope.showAceEditor = false;
                 $scope.previewSrc = "/tpl/" + data.route;
-            } 
-            
+            } else {
+                cType = data.contenttype;
+                _editor.session.setMode("ace/mode/html");
+            }
+
             $scope.contentTypeOptions = contentTypeOptions;
 
             var keyFound = 0;
