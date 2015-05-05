@@ -16,7 +16,7 @@ angular.module( 'ngBoilerplate', [
         url: "/editor/{id}",
         templateUrl: "/tpl/editor",
         controller: 'AppCtrl'
-    })
+    });
 })
 
 .run( function run () {
@@ -117,8 +117,8 @@ angular.module( 'ngBoilerplate', [
         // do nothing of no data
         // or not leaf node
         //
-        if((typeof data.node == 'undefined') || 
-                (typeof data.node.id == 'undefined') || 
+        if((typeof data.node === 'undefined') || 
+                (typeof data.node.id === 'undefined') || 
                 (data.node.children.length > 0)) {
             return;
         }
@@ -145,58 +145,58 @@ angular.module( 'ngBoilerplate', [
         //
         // See for list of all possible operations: $.jstree.defaults.contextmenu
         //
-	var folder =  {
-		"create" : {
-			"separator_before"  : false,
-			"separator_after"   : true,
-			"_disabled"	    : false, //(this.check("create_node", data.reference, {}, "last")),
-			"label"		    : "Create",
-			"action"	    : function (data) {
-				var inst = $.jstree.reference(data.reference),
-					   obj = inst.get_node(data.reference);
-
-				inst.create_node(obj, {}, "last", function (new_node) {
-					setTimeout(function () { inst.edit(new_node); },0);
-				});
-			}
-		}
+        var folder =  {
+                "create" : {
+                        "separator_before"  : false,
+                        "separator_after"   : true,
+                        "_disabled"         : false, //(this.check("create_node", data.reference, {}, "last")),
+                        "label"             : "Create",
+                        "action"            : function (data) {
+                            var inst = $.jstree.reference(data.reference),
+                                        obj = inst.get_node(data.reference);
+                            
+                            inst.create_node(obj, {}, "last", function (new_node) {
+                                setTimeout(function () { inst.edit(new_node); },0);
+                            });
+                        }
+                }
 
         };
         var file = {
-		"rename" : {
-			"separator_before"  : false,
-			"separator_after"   : false,
-			"_disabled"	    : false, //(this.check("rename_node", data.reference, this.get_parent(data.reference), "")),
-			"label"		    : "Rename",
-			/*
-			"shortcut"	    : 113,
-			"shortcut_label"    : 'F2',
-			"icon"		    : "glyphicon glyphicon-leaf",
-			*/
-			"action"    : function (data) {
-				var inst = $.jstree.reference(data.reference),
-					obj = inst.get_node(data.reference);
-
-				inst.edit(obj);
-			}
-		},
-		"remove" : {
-			"separator_before"  : false,
-			"icon"		    : false,
-			"separator_after"   : false,
-			"_disabled"	    : false, //(this.check("delete_node", data.reference, this.get_parent(data.reference), "")),
-			"label"		    : "Delete",
-			"action"	    : function (data) {
-				var inst = $.jstree.reference(data.reference),
-					obj = inst.get_node(data.reference);
-				if(inst.is_selected(obj)) {
-					inst.delete_node(inst.get_selected());
-				}
-				else {
-					inst.delete_node(obj);
-				}
-			}
-		},
+            "rename" : {
+                            "separator_before"  : false,
+                            "separator_after"   : false,
+                            "_disabled"         : false, //(this.check("rename_node", data.reference, this.get_parent(data.reference), "")),
+                            "label"             : "Rename",
+                            /*
+                            "shortcut"          : 113,
+                            "shortcut_label"    : 'F2',
+                            "icon"              : "glyphicon glyphicon-leaf",
+                            */
+                            "action"    : function (data) {
+                                var inst = $.jstree.reference(data.reference),
+                                obj = inst.get_node(data.reference);
+                            
+                                inst.edit(obj);
+                    }
+            },
+            "remove" : {
+                    "separator_before"  : false,
+                    "icon"              : false,
+                    "separator_after"   : false,
+                    "_disabled"         : false, //(this.check("delete_node", data.reference, this.get_parent(data.reference), "")),
+                    "label"             : "Delete",
+                    "action"            : function (data) {
+                        var inst = $.jstree.reference(data.reference),
+                            obj = inst.get_node(data.reference);
+                        if(inst.is_selected(obj)) {
+                            inst.delete_node(inst.get_selected());
+                        }
+                        else {
+                            inst.delete_node(obj);
+                        }
+                    }
+            }
         };
 
         // determin menu contents
@@ -204,7 +204,7 @@ angular.module( 'ngBoilerplate', [
         //
         // TODO: localize "Files" tricky here
         //
-        if(e.children.length == 0) {
+        if(e.children.length === 0) {
             return file;
         } if (e.text == "Files") {
             return {};
@@ -229,16 +229,17 @@ angular.module( 'ngBoilerplate', [
             route: $scope.route
         };
 
-        if((typeof $scope.id != 'undefined') && ($scope.id != null) && ($scope.id != 0)) {
+        var dataOut = "";
+        if((typeof $scope.id !== 'undefined') && ($scope.id != null) && ($scope.id !== 0)) {
             // Update Template
             //
             //
             data.id = $scope.id;
 
-            var dataOut = JSON.stringify(data);
+            dataOut = JSON.stringify(data);
 
             $http.put("/templates", dataOut).success(function(data) {
-                if(data.success == true) {
+                if(data.success === true) {
                     console.log("Success, template saved");
                 } else {
                     console.log("Error, template not saved");
@@ -247,10 +248,10 @@ angular.module( 'ngBoilerplate', [
                 console.log("Error, template not saved");
             });
         } else {
-            var dataOut = JSON.stringify(data);
+            dataOut = JSON.stringify(data);
 
             $http.post("/templates", dataOut).success(function(data) {
-                if(data.success == true) {
+                if(data.success === true) {
                     console.log("Success, template saved");
                     treeData.node.id = data.id;
                 } else {
@@ -272,9 +273,9 @@ angular.module( 'ngBoilerplate', [
 
     $scope.deleteNodeCB = function(e, data) {
         $scope.id = data.node.id;
-        if((typeof $scope.id != undefined) && ($scope.id != null) && ($scope.id != 0)) {
-            $http.delete("/templates?id=" + $scope.id).success(function(data) {
-                 if(data.success == true) {
+        if((typeof $scope.id !== undefined) && ($scope.id != null) && ($scope.id !== 0)) {
+            $http['delete']("/templates?id=" + $scope.id).success(function(data) {
+                 if(data.success === true) {
                      console.log("Success, template deleted");
                  } else {
                      console.log("Error, template not deleted");
@@ -283,7 +284,8 @@ angular.module( 'ngBoilerplate', [
                  console.log("Error, template not deleted");
             });
         }
-    }
+    };
+
     console.log("DEBUG EditCtrl id:" + $stateParams.id);
     $scope.id = $stateParams.id;
 
@@ -293,7 +295,7 @@ angular.module( 'ngBoilerplate', [
         // if new file, just return
         // nothing to fill out
         //
-        if($stateParams.id == 0) {
+        if($stateParams.id === 0) {
             return;
         } 
 
@@ -308,7 +310,7 @@ angular.module( 'ngBoilerplate', [
             $scope.group = data.group;
             $scope.id = data._id;
             var content = "";
-            if((typeof data.content != 'undefined') && (data.content != null)) {
+            if((typeof data.content !== 'undefined') && (data.content != null)) {
                 content = atob(data.content);
             }
             //content = "abc123";
@@ -329,16 +331,16 @@ angular.module( 'ngBoilerplate', [
             var cType = "text/html";
             $scope.showAceEditor = true;
 
-            if(data.contenttype.toLowerCase().indexOf('text/css') == 0) {
+            if(data.contenttype.toLowerCase().indexOf('text/css') === 0) {
                 cType = data.contenttype;
                 _editor.session.setMode("ace/mode/css");
-            } else if(data.contenttype.toLowerCase().indexOf('application/javascript') == 0) {
+            } else if(data.contenttype.toLowerCase().indexOf('application/javascript') === 0) {
                 cType = data.contenttype;
                 _editor.session.setMode("ace/mode/javascript");
-            } else if(data.contenttype.toLowerCase().indexOf('application/json') == 0) {
+            } else if(data.contenttype.toLowerCase().indexOf('application/json') === 0) {
                 cType = data.contenttype;
                 _editor.session.setMode("ace/mode/json");
-            } else if(data.contenttype.toLowerCase().indexOf('image') == 0) {
+            } else if(data.contenttype.toLowerCase().indexOf('image') === 0) {
                 cType = "image/auto-select";
                 $scope.showAceEditor = false;
                 $scope.previewSrc = "/tpl/" + data.route;
@@ -363,17 +365,17 @@ angular.module( 'ngBoilerplate', [
 
     $scope.aceChanged = function(e) {
         console.log("aceChanged");
-    }
+    };
 
     $scope.CopyTemplate = function() {
         $scope.route = "Copy of " + $scope.route;
         $scope.id = 0;
-    }
+    };
 
     $scope.DeleteTemplate = function() {
-        if((typeof $scope.id != undefined) && ($scope.id != null) && ($scope.id != 0)) {
-            $http.delete("/templates?id=" + $scope.id).success(function(data) {
-                 if(data.success == true) {
+        if((typeof $scope.id !== undefined) && ($scope.id != null) && ($scope.id !== 0)) {
+            $http['delete']("/templates?id=" + $scope.id).success(function(data) {
+                 if(data.success === true) {
                      console.log("Success, template deleted");
                  } else {
                      console.log("Error, template not deleted");
@@ -382,7 +384,7 @@ angular.module( 'ngBoilerplate', [
                  console.log("Error, template not deleted");
             });
         }
-    }
+    };
 
     // click event to save form
     // 
@@ -392,7 +394,7 @@ angular.module( 'ngBoilerplate', [
         var description = $scope.description;
         var group = $scope.group;
 
-        var contenttype = ""
+        var contenttype = "";
         var content = "";
         // plain text content
         //
@@ -402,8 +404,8 @@ angular.module( 'ngBoilerplate', [
         } else {
             // image content
             //
-            contenttype = $scope.imageContentType
-            content = $scope.imageData
+            contenttype = $scope.imageContentType;
+            content = $scope.imageData;
             $scope.route = $scope.imageName;
         }
 
@@ -418,17 +420,18 @@ angular.module( 'ngBoilerplate', [
         if($scope.showAceEditor === false) {
             data.size = $scope.imageSize;
         }
+        var dataOut = "";
 
-        if((typeof $scope.id != 'undefined') && ($scope.id != null) && ($scope.id != 0)) {
+        if((typeof $scope.id !== 'undefined') && ($scope.id != null) && ($scope.id !== 0)) {
             // Update Template
             //
             //
             data.id = $scope.id;
 
-            var dataOut = JSON.stringify(data);
+            dataOut = JSON.stringify(data);
 
             $http.put("/templates", dataOut).success(function(data) {
-                if(data.success == true) {
+                if(data.success === true) {
                     console.log("Success, template saved");
                     //var treeNav = jsTreeNav.getJsTree();
                     //var node = $.jstree._focused().get_selected();
@@ -446,10 +449,10 @@ angular.module( 'ngBoilerplate', [
         } else {
             // New Template
             //
-            var dataOut = JSON.stringify(data);
+            dataOut = JSON.stringify(data);
 
             $http.post("/templates", dataOut).success(function(data) {
-                if(data.success == true) {
+                if(data.success === true) {
                     console.log("Success, template saved");
                     var treeNav = jsTreeNav.getJsTree();
                     //treeNav.refresh();
@@ -490,7 +493,7 @@ angular.module( 'ngBoilerplate', [
                 $scope.imageContentType = blob.type;
                 $scope.imageSize = blob.size;
                 $scope.previewSrc = "/tpl/" + blob.name;
-            }
+            };
 
             reader.readAsBinaryString(blob);
 
