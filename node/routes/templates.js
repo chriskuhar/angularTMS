@@ -150,6 +150,11 @@ router.post('/', function(req, res, next) {
         (req.body.contenttype != null) && 
         (req.body.contenttype.length > 0)) {
             newVals.contenttype = req.body.contenttype;
+    } else {
+        // so things to crash later on, we need a value
+        // can change later
+        //
+        newVals.contenttype = 'text/html';
     }
 
     if((typeof req.body.content != 'undefined') && 

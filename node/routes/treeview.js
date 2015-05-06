@@ -58,6 +58,13 @@ router.get('/', function(req, res, next) {
                 item.text = template.route;
                 item.state = {"selected": false, "opened": false};
                 item.children = false;
+
+                // if it is not set, let's not crash
+                //
+                if((typeof template.contenttype === 'undefined') || (template.contenttype === null)) {
+                    template.contenttype = "text/html";
+                }
+
                 if(template.contenttype.toLowerCase().indexOf('text/css') == 0) {
                     cssTopNode.children.push(item);
                 } else if(template.contenttype.toLowerCase().indexOf('application/javascript') == 0) {
