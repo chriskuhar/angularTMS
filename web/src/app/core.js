@@ -299,6 +299,10 @@ angular.module( 'ngBoilerplate', [
             return;
         } 
 
+        // set list for select / options
+        //
+        $scope.contentTypeOptions = contentTypeOptions;
+
         $http.get("/templates?id=" + $stateParams.id).success(function(data) {
             // did not find a template, that is okay
             //
@@ -398,7 +402,7 @@ angular.module( 'ngBoilerplate', [
         var content = "";
         // plain text content
         //
-        if($scope.showAceEditor === true) {
+        if(($scope.showAceEditor === true) && (typeof $scope.imageData === 'undefined')) {
             contenttype = $scope.contentType.contenttype;
             content = btoa($scope.aceEditor.getSession().getValue());
         } else {
@@ -496,7 +500,6 @@ angular.module( 'ngBoilerplate', [
             };
 
             reader.readAsBinaryString(blob);
-
         }
     });
 
